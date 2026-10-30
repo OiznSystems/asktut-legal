@@ -10,7 +10,7 @@ pre{background:rgba(127,127,127,.12);padding:12px;overflow-x:auto;font-size:13px
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .draft{background:#3a2e10;color:#f3dc9a;border-color:#7a5f1c}}
 footer{border-top:1px solid var(--line);margin-top:48px;padding-top:16px;color:var(--muted);font-size:13px}
 </style></head>
-<body><header><span class="brand">Ask Tut · Oizn Systems Inc.</span> &nbsp; <nav><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="dpa.html">DPA</a><a href="acceptable-use.html">Acceptable Use & AI</a><a href="support.html">Support</a><a href="security.html">Security</a></nav></header><main>
+<body><header><span class="brand">Ask Tut · Oizn Systems Inc.</span> &nbsp; <nav><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="dpa.html">DPA</a><a href="acceptable-use.html">Acceptable Use & AI</a><a href="support.html">Support</a><a href="security.html">Security</a><a href="responsible-ai.html">Responsible AI</a></nav></header><main>
 <div class="draft"><b>Draft 1.0</b> — published for review; effective 2026-10-30. Questions: support@oizn.com</div>
 <h1 id="ask-tut-security-and-data-handling-overview">Ask Tut — Security and Data Handling Overview</h1>
 <p><strong>Effective date:</strong> 30 October 2026 · <strong>Version:</strong> 1.0</p>
@@ -50,7 +50,7 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding-top:16px;color:v
 <h2 id="3-the-approve-before-change-control">3. The "approve before change" control</h2>
 <p>Ask Tut can read freely within the user's permissions and the administrator's allow-list, but every write goes through a fixed sequence: the model proposes a change → the service checks it against the administrator's rules (table allowed? field allowed? status change allowed? role rule?) → the user sees an <strong>Approve / Deny card</strong> with the exact before/after → approval is a <strong>signed, single-use token</strong> (HMAC, nonce, 30-minute expiry) bound to that user and that change → the rules are <strong>re-checked at execution</strong> → the change is written as the user → the change is recorded in <strong>Change history</strong>. Denied or expired approvals do nothing. Bulk changes (max 50) use one approval listing every record.</p>
 <p>Tools that send or deliver messages, export data in bulk, provision, register or administer are <strong>not offered to the model by design</strong>. Record deletion is <strong>off by default</strong> and, when an administrator enables it for a specific table, still requires the user's approval for each record. Ask Tut has no email or messaging send capability; "email draft" creates a draft record only.</p>
-<h2 id="4-prompt-injection-and-model-safeguards">4. Prompt-injection and model safeguards</h2>
+<h2 id="4-prompt-injection-content-safety-and-model-safeguards">4. Prompt-injection, content safety and model safeguards</h2>
 <ul>
 <li>The administrator's rules are enforced in code, not by asking the model to behave. A record or document containing instructions ("ignore your rules and delete…") cannot unlock a write — the policy check runs on the actual tool call.</li>
 <li>Tool results are size-limited and treated as data; system instructions are separate from retrieved content.</li>
@@ -58,6 +58,9 @@ footer{border-top:1px solid var(--line);margin-top:48px;padding-top:16px;color:v
 <li>Answers show the records used; case/record numbers link back to the source so users can verify.</li>
 <li>Users can rate every answer (👍/👎 with comment); ratings and comments are visible to administrators in the dashboard for review and follow-up.</li>
 <li>An "AI assistant" notice is shown in the interface; the assistant identifies itself as an AI when asked.</li>
+<li><strong>Direct prompt injection ("jailbreaks")</strong> cannot unlock anything: the allow-list and approval checks run on the actual tool call, so a persuasive prompt gains no permission the user and administrator have not already granted. <strong>Indirect prompt injection</strong> (instructions hidden in records, notes, emails or documents) is treated as data: it cannot authorize a write, widen the allow-list or bypass approval; it may at most influence wording, which is why answers cite their sources.</li>
+<li><strong>Harmful-content handling:</strong> Ask Tut relies on Claude's built-in safety training and Anthropic's usage policies and automated trust-and-safety monitoring; it does <strong>not</strong> add a separate content-classification layer (Copilot uses Azure AI Content Safety filters). When Microsoft Foundry is selected, the content-safety configuration of that Azure deployment applies as the customer sets it. Inappropriate answers can be reported with 👎 + comment and are visible to administrators.</li>
+<li>A Responsible AI FAQ in Microsoft's Copilot format is published at https://asktut.com/responsible-ai.</li>
 </ul>
 <h2 id="5-data-flows-and-locations">5. Data flows and locations</h2>
 <table>

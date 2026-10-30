@@ -1,0 +1,124 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ask Tut — Responsible AI FAQ (Transparency Note)</title><meta name="description" content="Ask Tut — Responsible AI FAQ (Transparency Note) — Oizn Systems Inc."><link rel="canonical" href="https://asktut.com/responsible-ai"><style>
+:root{--bg:#ffffff;--fg:#1a1a1a;--muted:#555;--line:#e3e3e3;--accent:#1F3A68;--gold:#C9962E}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#121417;--fg:#e8e8e8;--muted:#aaa;--line:#2b2f36;--accent:#8fb3ff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+header{border-bottom:1px solid var(--line);padding:14px 16px}header .brand{font-weight:700;color:var(--accent)}header nav a{margin-right:14px;color:var(--accent);text-decoration:none;font-size:14px}
+main{max-width:860px;margin:0 auto;padding:24px 16px 64px}h1{font-size:1.9em;line-height:1.2}h2{margin-top:2em;border-bottom:1px solid var(--line);padding-bottom:.2em}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:1em 0;display:block;overflow-x:auto}th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}th{background:rgba(31,58,104,.08)}
+pre{background:rgba(127,127,127,.12);padding:12px;overflow-x:auto;font-size:13px}code{font-size:.95em}
+.draft{background:#fff4d6;color:#5a3d00;border:1px solid #e6c86e;padding:8px 12px;border-radius:6px;font-size:14px;margin-bottom:16px}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .draft{background:#3a2e10;color:#f3dc9a;border-color:#7a5f1c}}
+footer{border-top:1px solid var(--line);margin-top:48px;padding-top:16px;color:var(--muted);font-size:13px}
+</style></head>
+<body><header><span class="brand">Ask Tut · Oizn Systems Inc.</span> &nbsp; <nav><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="dpa.html">DPA</a><a href="acceptable-use.html">Acceptable Use & AI</a><a href="support.html">Support</a><a href="security.html">Security</a><a href="responsible-ai.html">Responsible AI</a></nav></header><main>
+<div class="draft"><b>Draft 1.0</b> — published for review; effective 2026-10-30. Questions: support@oizn.com</div>
+<h1 id="ask-tut-responsible-ai-faq-transparency-note">Ask Tut — Responsible AI FAQ (Transparency Note)</h1>
+<p><strong>Effective date:</strong> 30 October 2026 · <strong>Version:</strong> 1.0</p>
+<p>This page follows the structure Microsoft uses for its <em>Responsible AI FAQs</em> for Copilot in Dynamics 365, so that customers and marketplace reviewers can compare Ask Tut with Copilot on the same questions. It is descriptive; the binding terms are the <a href="https://asktut.com/terms">Terms of Service</a>, <a href="https://asktut.com/privacy">Privacy Policy</a>, <a href="https://asktut.com/dpa">DPA</a> and <a href="https://asktut.com/acceptable-use">Acceptable Use and AI Policy</a>.</p>
+<h2 id="what-is-ask-tut">What is Ask Tut?</h2>
+<p>Ask Tut is an AI assistant from Oizn Systems Inc. that helps people who work in Dynamics 365 (Customer Service, Finance &amp; Operations, Business Central), SharePoint, HubSpot or Salesforce. They ask a question in plain language and Ask Tut answers from their organization's live data, prepares briefings and documents, and — only after the person approves — makes changes to records. It is available inside those applications and in Microsoft Teams.</p>
+<p>Ask Tut is <strong>not a Microsoft product and is not Copilot</strong>. It uses <strong>Claude</strong> large language models from Anthropic, either through Anthropic's API or through Microsoft Foundry in the customer's own Azure subscription — the administrator chooses.</p>
+<h2 id="what-can-it-do">What can it do?</h2>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>What it does</th>
+<th>Human control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ask a question</td>
+<td>Answers from live records (cases/tickets, accounts, contacts, deals, vendors, items, work orders, notes, emails, calls, SLA timers), knowledge articles, SharePoint documents and trusted websites the administrator allows</td>
+<td>Answer shows which records were used; record numbers link to the source</td>
+</tr>
+<tr>
+<td>Brief me</td>
+<td>A short case/record briefing: summary, customer and tier, what happened so far, open items, relevant knowledge, best next step</td>
+<td>Review before acting</td>
+</tr>
+<tr>
+<td>Documents</td>
+<td>Word, Excel and PDF briefs and lists, with the organization's branding</td>
+<td>Person downloads and reviews</td>
+</tr>
+<tr>
+<td>Drafts</td>
+<td>Email drafts (saved as drafts, never sent), notes</td>
+<td>Person reviews and sends</td>
+</tr>
+<tr>
+<td>Changes</td>
+<td>Updates to allowed fields on allowed tables; bulk updates (max 50)</td>
+<td><strong>Approve / Deny card</strong> with before → after; nothing changes without approval</td>
+</tr>
+<tr>
+<td>Proactive help (optional)</td>
+<td>SLA-deadline warnings, budget alerts, monthly cost report reminders</td>
+<td>Administrator turns on; no autonomous changes</td>
+</tr>
+</tbody>
+</table>
+<p>Ask Tut <strong>cannot</strong> send email or messages, delete records unless an administrator enables deletion for a table (and even then each deletion needs approval), change record status while the "never change status" rule is on, or act outside the signed-in person's permissions.</p>
+<h2 id="what-is-it-intended-for">What is it intended for?</h2>
+<p>To help service, sales, finance and operations staff find and summarize information faster and prepare routine changes and documents. <strong>Its output is not intended to be used without human review.</strong> It is not intended for decisions with legal or similarly significant effects on people, and it is not a source of legal, financial, medical or other professional advice.</p>
+<h2 id="how-was-it-evaluated">How was it evaluated?</h2>
+<ul>
+<li><strong>Ground-truth tests:</strong> every edition is tested against a seeded demo dataset with known answers (counts, open items, claim outcomes, averages) before release; the current results are recorded in the release notes.</li>
+<li><strong>Governance tests:</strong> automated offline test suites (mock platform + scripted model) check that writes are blocked without approval, that administrator rules are enforced, that status changes and forbidden tools are refused, and that approvals cannot be replayed.</li>
+<li><strong>Live tests</strong> in the lab environment for each release (pane, Teams, Tut Admin, dashboard).</li>
+<li><strong>Model evaluation:</strong> Ask Tut does not train or fine-tune models. Model quality and safety evaluation is Anthropic's (see Anthropic's model cards and system cards). Oizn tracks answer quality through the 👍/👎 ratings in the Consumption dashboard.</li>
+</ul>
+<h2 id="what-are-its-limitations-and-how-do-you-reduce-them">What are its limitations, and how do you reduce them?</h2>
+<ul>
+<li><strong>It can be wrong.</strong> Large language models make mistakes and can sound confident when they are not. Ask Tut grounds answers in retrieved records and shows them, but you must check before relying on an answer, and read an approval card before approving.</li>
+<li><strong>It only knows what it retrieves.</strong> Poor data quality (duplicate records, stale notes, outdated knowledge articles) produces poor answers. Good data and knowledge management matter as much as for Copilot.</li>
+<li><strong>Counts and aggregates</strong> come from queries Ask Tut composes; for large result sets it may sample or page. Use the platform's own reports for audited numbers.</li>
+<li><strong>Languages:</strong> answers in English and Canadian French; other languages are best-effort. Record names and field names are kept as they are.</li>
+<li><strong>Platform dependencies:</strong> when a platform API, MCP server or the AI provider is unavailable, Ask Tut says so rather than guessing.</li>
+<li><strong>HubSpot edition (current release):</strong> runs with the app's installation permissions limited by administrator rules, not each person's own HubSpot permissions. Administrators should restrict tables and fields accordingly until per-user permissions ship.</li>
+</ul>
+<h2 id="tips-for-good-results">Tips for good results</h2>
+<p>Ask one clear question at a time; name the record ("CAS-01011", "Baker Espresso Bar"); add context ("the customer says the pump stopped after descaling"); ask for "more detail" or "shorter" to adjust; say "new chat" to start fresh.</p>
+<h2 id="what-is-the-data-security-model">What is the data security model?</h2>
+<ul>
+<li><strong>As the user.</strong> Every data call to Dynamics 365, Dataverse, Business Central, SharePoint, HubSpot or Salesforce is made with the signed-in person's own identity. Security roles, field security, sharing rules and permission sets apply exactly as in the application. People cannot see through Ask Tut what they could not see directly.</li>
+<li><strong>Administrator rules enforced in code.</strong> Which tables and fields can be read or changed, whether status changes are allowed, role rules, cost limits — all are checked by the Ask Tut service on every tool call, not by asking the model to behave.</li>
+<li><strong>No copy of your data.</strong> Ask Tut keeps only a usage log and a change history (see the Privacy Policy); the application stays the system of record.</li>
+<li><strong>Secrets</strong> are in Azure Key Vault; administrator pages require the platform's administrator role and are checked server-side.</li>
+</ul>
+<h2 id="where-is-data-processed-and-does-it-leave-my-cloud">Where is data processed, and does it leave my cloud?</h2>
+<p>This is the main difference from Copilot. Copilot's prompts and responses stay inside Microsoft's cloud trust boundary. <strong>Ask Tut sends the question, the retrieved records and the conversation to the AI provider the administrator chose:</strong></p>
+<ul>
+<li><strong>Claude API (Anthropic)</strong> — processed in the <strong>United States</strong> ("US only" setting; Ask Tut requires the provider to confirm US processing) or in Anthropic's global regions ("Global"). This is <strong>outside the Microsoft / HubSpot / Salesforce cloud</strong> and, for most customers, outside their own country. Anthropic does not use the data to train models and does not retain conversation content by default (exceptions: legal requirements; content flagged by automated trust-and-safety systems, up to two years).</li>
+<li><strong>Microsoft Foundry</strong> — Claude running in the <strong>customer's own Azure subscription</strong>, Global or US Data Zone; data stays under the customer's Microsoft agreement and Anthropic is not involved.</li>
+</ul>
+<p>The administrator makes this choice in Tut Admin → <em>Where Claude runs</em>, and in doing so acknowledges the cross-border processing on behalf of the organization. Canada-only AI processing is not available from any provider for current Claude models. The Ask Tut service itself (hosted edition) runs in Azure Canada Central.</p>
+<h2 id="is-my-data-used-to-train-ai-models">Is my data used to train AI models?</h2>
+<p>No. Oizn never trains models on customer data, and Anthropic's commercial API terms exclude training on API inputs and outputs. There is no optional "data sharing for AI improvement" switch — the answer is simply no.</p>
+<h2 id="how-does-ask-tut-handle-harmful-or-inappropriate-content">How does Ask Tut handle harmful or inappropriate content?</h2>
+<p>Ask Tut relies on <strong>Claude's built-in safety training</strong> (the model declines hateful, violent, sexual, self-harm and other harmful requests) and on Anthropic's usage policies and automated trust-and-safety monitoring. Ask Tut does <strong>not</strong> add a separate content-classification layer of its own, unlike Copilot's Azure AI Content Safety filters. When Microsoft Foundry is selected, the content-safety configuration of that Azure deployment applies as set by the customer. Ask Tut is a business tool over business records, which keeps such content rare; administrators can add instructions, and people can report any inappropriate answer with 👎 and a comment, which administrators review in the Consumption dashboard.</p>
+<h2 id="does-ask-tut-protect-against-prompt-injection">Does Ask Tut protect against prompt injection?</h2>
+<ul>
+<li><strong>Direct ("jailbreak") attempts</strong> by a user cannot unlock anything: the rules that matter (what can be read or changed, approval before writes) are enforced by the service on the actual tool call, so a persuasive prompt gains nothing the person's own permissions and the administrator's rules do not already allow.</li>
+<li><strong>Indirect attempts</strong> — instructions hidden in a record, note, email or document that Ask Tut reads — are treated as data. They cannot authorize a write (approval is still required and shown to the person), cannot widen the allow-list, and tool results are size-limited and kept separate from the system instructions. The model may still be <em>influenced</em> in what it says; that is why answers show their sources and people are asked to review.</li>
+</ul>
+<h2 id="can-i-influence-or-fine-tune-the-model">Can I influence or fine-tune the model?</h2>
+<p>You cannot fine-tune the model. You can: write organization instructions (tone, terminology, support tiers, what to include in briefings) in Tut Admin; choose the model (Haiku, Sonnet, Opus) and an "Auto" mode with a ceiling, overall and per role; choose the provider and processing region; maintain good knowledge articles and data; and use 👍/👎 feedback to find what needs fixing.</p>
+<h2 id="is-user-feedback-shared-with-oizn">Is user feedback shared with Oizn?</h2>
+<p>No. Ratings and comments are stored in the organization's own Ask Tut records (its Dataverse/SharePoint, or its Ask Tut storage in the hosted edition) for its administrators. Oizn sees them only if the organization sends them to support.</p>
+<h2 id="how-are-model-or-behaviour-changes-communicated">How are model or behaviour changes communicated?</h2>
+<p>The model in use is always visible in Tut Admin and in each usage row. If an administrator pins a specific model, Ask Tut does not switch it; in "Auto" mode it picks per question within the ceiling the administrator set. Oizn announces new models, removed models and material behaviour changes in release notes and in Tut Admin at least 30 days ahead where possible; incremental prompt improvements are not individually announced. Providers' own model deprecations are passed on as soon as Oizn learns of them.</p>
+<h2 id="is-performance-monitored-and-what-about-incidents">Is performance monitored, and what about incidents?</h2>
+<p>Yes. Application Insights monitors errors and latency; the Consumption dashboard shows answer quality, refusals and errors per organization. Oizn maintains an incident-response procedure (triage → contain → notify affected customers within 48 hours of a confirmed personal-data breach → remediate → post-incident report within 30 days). High-severity outages are communicated to affected customers.</p>
+<h2 id="fairness-and-bias">Fairness and bias</h2>
+<p>Ask Tut does not make or recommend decisions about individuals (hiring, credit, eligibility, discipline), and the Acceptable Use and AI Policy prohibits using it that way. Model-level fairness evaluation is Anthropic's; Oizn's contribution is scope (business records, human approval, source citations) and the ability for administrators to review outputs.</p>
+<h2 id="does-ask-tut-depend-on-non-microsoft-tools">Does Ask Tut depend on non-Microsoft tools?</h2>
+<p>Yes: the Claude models (Anthropic) when the Claude API provider is selected, and Anthropic's API. Everything else is Azure and the customer's own platform. Choosing Microsoft Foundry removes the direct Anthropic dependency.</p>
+<h2 id="regulatory-and-privacy-review">Regulatory and privacy review</h2>
+<p>Oizn conducts a privacy and legal review of each feature before release and documents data flows in the Security Overview and DPA. Oizn is a small company without its own SOC 2 or ISO 27001 certification; its subprocessors (Microsoft Azure, Anthropic) publish theirs.</p>
+<h2 id="related-pages">Related pages</h2>
+<p><a href="https://asktut.com/privacy">Privacy Policy</a> · <a href="https://asktut.com/acceptable-use">Acceptable Use and AI Policy</a> · <a href="https://asktut.com/security">Security Overview</a> · <a href="https://asktut.com/dpa">DPA</a> · <a href="https://asktut.com/support">Support</a></p>
+<p><em>Reference: this page mirrors the question set in Microsoft's "FAQ for Copilot data security and privacy in Dynamics 365 and Power Platform" and "Responsible AI FAQ for Copilot in Customer Service" (learn.microsoft.com, read 30 Oct 2026). Copilot is a Microsoft product; comparisons describe Ask Tut's own behaviour and Microsoft's published statements as of that date.</em></p>
+<footer>© 2026 Oizn Systems Inc. · asktut.com · This page is Ask Tut — Responsible AI FAQ (Transparency Note), version 1.0.</footer></main></body></html>
