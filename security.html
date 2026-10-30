@@ -1,0 +1,212 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ask Tut — Security and Data Handling Overview</title><meta name="description" content="Ask Tut — Security and Data Handling Overview — Oizn Systems Inc."><link rel="canonical" href="https://asktut.com/security"><style>
+:root{--bg:#ffffff;--fg:#1a1a1a;--muted:#555;--line:#e3e3e3;--accent:#1F3A68;--gold:#C9962E}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#121417;--fg:#e8e8e8;--muted:#aaa;--line:#2b2f36;--accent:#8fb3ff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+header{border-bottom:1px solid var(--line);padding:14px 16px}header .brand{font-weight:700;color:var(--accent)}header nav a{margin-right:14px;color:var(--accent);text-decoration:none;font-size:14px}
+main{max-width:860px;margin:0 auto;padding:24px 16px 64px}h1{font-size:1.9em;line-height:1.2}h2{margin-top:2em;border-bottom:1px solid var(--line);padding-bottom:.2em}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:1em 0;display:block;overflow-x:auto}th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}th{background:rgba(31,58,104,.08)}
+pre{background:rgba(127,127,127,.12);padding:12px;overflow-x:auto;font-size:13px}code{font-size:.95em}
+.draft{background:#fff4d6;color:#5a3d00;border:1px solid #e6c86e;padding:8px 12px;border-radius:6px;font-size:14px;margin-bottom:16px}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .draft{background:#3a2e10;color:#f3dc9a;border-color:#7a5f1c}}
+footer{border-top:1px solid var(--line);margin-top:48px;padding-top:16px;color:var(--muted);font-size:13px}
+</style></head>
+<body><header><span class="brand">Ask Tut · Oizn Systems Inc.</span> &nbsp; <nav><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="dpa.html">DPA</a><a href="acceptable-use.html">Acceptable Use & AI</a><a href="support.html">Support</a><a href="security.html">Security</a></nav></header><main>
+<div class="draft"><b>Draft 1.0</b> — published for review; effective 2026-10-30. Questions: legal@oizn.com</div>
+<h1 id="ask-tut-security-and-data-handling-overview">Ask Tut — Security and Data Handling Overview</h1>
+<p><strong>Effective date:</strong> 30 October 2026 · <strong>Version:</strong> 1.0</p>
+<p>This page is written for IT, security and compliance reviewers (and for marketplace reviews such as the Microsoft 365 Publisher Attestation and the Salesforce security review). It describes how Ask Tut is built, what it touches, and what controls apply. Contractual commitments are in the <a href="https://asktut.com/terms">Terms of Service</a> and <a href="https://asktut.com/dpa">DPA</a>; this page is descriptive.</p>
+<h2 id="1-architecture-in-one-paragraph">1. Architecture in one paragraph</h2>
+<p>Ask Tut has three parts. (1) <strong>Front ends</strong> inside the platform your people already use — a side pane in Dynamics 365, a record card in HubSpot, a utility panel in Salesforce, a web chat page, and a Microsoft Teams bot. (2) The <strong>Ask Tut service</strong> — a small Node.js application on Azure Functions (Flex Consumption plan, Canada Central) that runs the conversation loop, enforces the administrator's rules, calls the platform's data APIs <strong>as the signed-in user</strong>, and calls the AI model. (3) The <strong>AI model</strong> — Claude, through Anthropic's API or through Microsoft Foundry in the customer's own Azure subscription. There is no Ask Tut database of business data: the customer's platform stays the system of record.</p>
+<p><code>User ──(sign-in, question)──► Front end ──► Ask Tut service (Azure Function, Canada Central)
+                                                   │  as the user (OAuth / OBO)
+                                                   ├──► Platform data API (Dataverse MCP / BC MCP / F&amp;O OData / Graph / HubSpot / Salesforce MCP)
+                                                   ├──► AI model (Claude API: Global or US only · or Foundry in customer's Azure)
+                                                   └──► Ask Tut records (usage log, change history, settings): customer's Dataverse/SharePoint or Azure Table storage</code></p>
+<h2 id="2-identity-and-authorization">2. Identity and authorization</h2>
+<table>
+<thead>
+<tr>
+<th>Edition</th>
+<th>How Ask Tut authenticates to your data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dynamics 365 CE, F&amp;O, SharePoint, Business Central</td>
+<td>Microsoft Entra ID. The front end obtains a token for the Ask Tut API (<code>access_as_user</code>); the service exchanges it <strong>on-behalf-of</strong> the user for Dataverse / Business Central / Microsoft Graph tokens. No stored passwords. Teams uses Bot Framework SSO with the same app registration.</td>
+</tr>
+<tr>
+<td>Salesforce</td>
+<td>Salesforce External Client App with <strong>OAuth 2.0 + PKCE</strong>, JWT access tokens, refresh-token rotation; scopes <code>api</code>, <code>refresh_token</code>, <code>openid</code>, <code>mcp_api</code>. Data is read through Salesforce's hosted MCP server, so profile, permission sets, field-level security and sharing rules apply.</td>
+</tr>
+<tr>
+<td>HubSpot</td>
+<td>Current release: the app's installation token, constrained by Tut Admin rules and the approval step. Planned: HubSpot's MCP auth app / user-level OAuth so each user's own HubSpot permissions apply.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Administrator functions</strong> (Tut Admin, Consumption dashboard, report download, provider check) require the platform's administrator role (Dynamics: System Administrator or System Customizer; Salesforce: System Administrator; Business Central: Entra app role <code>Tut.Admin</code>; HubSpot: app settings page, super-admin) and are checked <strong>server-side</strong> on every call.</p>
+<p><strong>Service identity</strong>: where Ask Tut must write its own log rows (e.g., Dataverse <code>tut_usage</code>), it uses a dedicated application user with a custom role limited to create/read on Ask Tut's own tables — never System Administrator, Customizer or Maker roles.</p>
+<h2 id="3-the-approve-before-change-control">3. The "approve before change" control</h2>
+<p>Ask Tut can read freely within the user's permissions and the administrator's allow-list, but every write goes through a fixed sequence: the model proposes a change → the service checks it against the administrator's rules (table allowed? field allowed? status change allowed? role rule?) → the user sees an <strong>Approve / Deny card</strong> with the exact before/after → approval is a <strong>signed, single-use token</strong> (HMAC, nonce, 30-minute expiry) bound to that user and that change → the rules are <strong>re-checked at execution</strong> → the change is written as the user → the change is recorded in <strong>Change history</strong>. Denied or expired approvals do nothing. Bulk changes (max 50) use one approval listing every record.</p>
+<p>Tools that send or deliver messages, export data in bulk, provision, register or administer are <strong>not offered to the model by design</strong>. Record deletion is <strong>off by default</strong> and, when an administrator enables it for a specific table, still requires the user's approval for each record. Ask Tut has no email or messaging send capability; "email draft" creates a draft record only.</p>
+<h2 id="4-prompt-injection-and-model-safeguards">4. Prompt-injection and model safeguards</h2>
+<ul>
+<li>The administrator's rules are enforced in code, not by asking the model to behave. A record or document containing instructions ("ignore your rules and delete…") cannot unlock a write — the policy check runs on the actual tool call.</li>
+<li>Tool results are size-limited and treated as data; system instructions are separate from retrieved content.</li>
+<li>Reads are limited to the tables/fields on the allow-list; "other tables" default to read-only or off.</li>
+<li>Answers show the records used; case/record numbers link back to the source so users can verify.</li>
+<li>Users can rate every answer (👍/👎 with comment); ratings and comments are visible to administrators in the dashboard for review and follow-up.</li>
+<li>An "AI assistant" notice is shown in the interface; the assistant identifies itself as an AI when asked.</li>
+</ul>
+<h2 id="5-data-flows-and-locations">5. Data flows and locations</h2>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Where it goes</th>
+<th>Retention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Question + retrieved records + conversation</td>
+<td>Ask Tut service (memory, during the request) → AI provider</td>
+<td>Not stored by Ask Tut after the answer (except the usage row and, if enabled, the question text). Anthropic: no training; no default retention of conversation content (see Privacy Policy §4)</td>
+</tr>
+<tr>
+<td>Usage row (who/when/model/tokens/tools/approval/cost; question text optional)</td>
+<td>Customer's Dataverse <code>tut_usage</code> (CE, F&amp;O) · SharePoint list (SharePoint edition) · Azure Table storage, Canada Central (BC, Salesforce, HubSpot)</td>
+<td>13 months (hosted) or customer-controlled (customer's environment)</td>
+</tr>
+<tr>
+<td>Change history (request, before, after)</td>
+<td>Same store as usage</td>
+<td>Same</td>
+</tr>
+<tr>
+<td>Conversation state (Teams/web follow-ups)</td>
+<td>Memory + same store (<code>tut_conversation</code> / <code>tutstate</code>)</td>
+<td>Cleared on "new chat"; 6 h inactivity expiry (Teams); deleted at subscription end</td>
+</tr>
+<tr>
+<td>Refresh tokens (Salesforce, Teams sign-in)</td>
+<td>Azure Table storage, encrypted at rest (AES-256)</td>
+<td>Until sign-out / expiry / subscription end</td>
+</tr>
+<tr>
+<td>Admin settings (policy)</td>
+<td>Dataverse web resource (CE) · Azure Table storage (others) — readable by all users, writable by admins only; contains <strong>no secrets</strong></td>
+<td>Life of the subscription</td>
+</tr>
+<tr>
+<td>Secrets (AI key, client secrets, HubSpot token)</td>
+<td><strong>Azure Key Vault</strong>, read by managed identity</td>
+<td>Rotated on request / on incident</td>
+</tr>
+<tr>
+<td>Diagnostics (Application Insights)</td>
+<td>Azure, Canada Central; no question text, no record content</td>
+<td>90 days</td>
+</tr>
+<tr>
+<td>Generated documents (Word/Excel/PDF)</td>
+<td>Returned to the user; not retained by the service</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>AI processing location is an administrator setting: <strong>Global</strong> or <strong>US only</strong> (Ask Tut requires the provider to confirm <code>inference_geo = us</code> and rejects the answer otherwise), or <strong>Microsoft Foundry</strong> in the customer's Azure (Global or US Data Zone). Canada-only AI processing is not available from any provider for current Claude models.</p>
+<h2 id="6-encryption">6. Encryption</h2>
+<p>TLS 1.2+ for every hop (front end ↔ service ↔ platform APIs ↔ AI provider). At rest: Azure Storage service-side encryption (AES-256, Microsoft-managed keys; customer-managed keys available in the customer-hosted edition), Dataverse encryption, Key Vault HSM-backed secrets. Approval tokens are HMAC-SHA256 signed with a per-deployment secret.</p>
+<h2 id="7-hosting-and-operations">7. Hosting and operations</h2>
+<ul>
+<li>Azure Functions, Flex Consumption, Node.js 20/22, Canada Central; Azure Bot Service (Teams channel) with single-tenant or managed-identity bot identities (no bot secrets where the platform allows).</li>
+<li>Customer-hosted edition: the same package deployed into the customer's subscription with the customer's Key Vault, storage and AI account; Oizn has no access.</li>
+<li>Monitoring: Application Insights (errors, latency, availability); budget and usage alerts to administrators (Teams and in-app bell — never email).</li>
+<li>Backups: Ask Tut holds no business data; its own records are in zone-redundant storage or in the customer's platform (covered by that platform's backup).</li>
+<li>Change management: source in a private GitHub repository (OiznSystems/AskTut), version-tagged builds, offline test suites per edition (mock platform + scripted model) run before every deployment, deployment through Azure's zip-deploy with build numbers visible at <code>/api/health</code>.</li>
+</ul>
+<h2 id="8-vulnerability-and-incident-management">8. Vulnerability and incident management</h2>
+<ul>
+<li>Dependencies pinned and reviewed; updates monthly or on critical advisories; Azure platform patching is managed by Microsoft.</li>
+<li>Responsible disclosure: <strong>security@oizn.com</strong>. We acknowledge within 2 business days.</li>
+<li>Incident response: triage → contain → notify affected customers within 48 hours of confirming a breach of personal data → remediate → post-incident report to affected customers within 30 days of resolution.</li>
+</ul>
+<h2 id="9-third-party-compliance-posture">9. Third-party compliance posture</h2>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Published assurances (as stated by the provider)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Microsoft Azure</td>
+<td>ISO/IEC 27001, 27017, 27018, SOC 1/2/3, CSA STAR, Canada Protected B assessments — see Microsoft Trust Center</td>
+</tr>
+<tr>
+<td>Anthropic (Claude API)</td>
+<td>SOC 2 Type II, ISO/IEC 27001, ISO 42001 (AI management), HIPAA-ready configurations; commercial API data not used for training — see trust.anthropic.com</td>
+</tr>
+<tr>
+<td>Microsoft Foundry (optional)</td>
+<td>Covered by the customer's Microsoft agreement and Azure compliance</td>
+</tr>
+</tbody>
+</table>
+<p>Oizn Systems Inc. itself is a small company and does not currently hold its own SOC 2 or ISO 27001 certification; we provide this overview, the DPA, and answers to security questionnaires instead.</p>
+<h2 id="10-permissions-ask-tut-asks-for-by-edition">10. Permissions Ask Tut asks for (by edition)</h2>
+<table>
+<thead>
+<tr>
+<th>Edition</th>
+<th>Permissions / scopes</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dynamics 365 CE</td>
+<td>Dataverse <code>user_impersonation</code> (delegated); Microsoft Graph <code>User.Read</code>, <code>Sites.Read.All</code> (delegated); optional Agent 365 tooling gateway <code>McpServers.D365Service.All</code>, <code>McpServers.D365Sales.All</code>, <code>McpServers.D365CustomerInsights.All</code> (delegated, admin consent)</td>
+<td>Read/write Dataverse as the user; read the user's profile; read allowed SharePoint sites; optional Dynamics 365 app MCP servers</td>
+</tr>
+<tr>
+<td>Business Central</td>
+<td>Dynamics 365 Business Central <code>Financials.ReadWrite.All</code> (delegated); Graph <code>User.Read</code>, <code>Sites.Read.All</code></td>
+<td>Act in BC as the user; profile; SharePoint</td>
+</tr>
+<tr>
+<td>F&amp;O</td>
+<td>Dynamics ERP <code>AX.FullAccess</code> / <code>Odata.FullAccess</code> (delegated) — as the user; Graph <code>User.Read</code></td>
+<td>OData as the user</td>
+</tr>
+<tr>
+<td>SharePoint</td>
+<td>Graph <code>User.Read</code>, <code>Sites.Read.All</code> (delegated); <code>Sites.ReadWrite.All</code> only if the administrator enables writes</td>
+<td>Read documents and lists as the user</td>
+</tr>
+<tr>
+<td>HubSpot</td>
+<td>CRM object scopes shown at install (contacts, companies, deals, tickets read/write; owners; teams)</td>
+<td>Record card Q&amp;A and approved changes</td>
+</tr>
+<tr>
+<td>Salesforce</td>
+<td>OAuth scopes <code>api</code>, <code>refresh_token</code>, <code>openid</code>, <code>mcp_api</code></td>
+<td>Hosted MCP data access as the user</td>
+</tr>
+<tr>
+<td>Teams app</td>
+<td>Bot (personal scope), <code>supportsFiles</code>, SSO with the same Entra app; no RSC permissions</td>
+<td>Chat with Ask Tut in Teams</td>
+</tr>
+</tbody>
+</table>
+<p>Ask Tut never asks for application-level (app-only) permissions to customer data.</p>
+<h2 id="11-what-ask-tut-does-not-do">11. What Ask Tut does not do</h2>
+<p>By design: no email or message sending · no app-only access to business data · no copying of business records into an Ask Tut database · no training of AI models on customer data · no advertising or tracking · no access by Oizn staff to a customer-hosted deployment · no storage of secrets outside Key Vault · no record deletion unless the administrator explicitly enables it for a table and the user approves each one.</p>
+<h2 id="12-contact">12. Contact</h2>
+<p>security@oizn.com · privacy@oizn.com · support@oizn.com · Oizn Systems Inc., 272 Claridge Dr, Nepean, Ontario K2J 5B9, Canada</p>
+<footer>© 2026 Oizn Systems Inc. · asktut.com · This page is Ask Tut — Security and Data Handling Overview, version 1.0.</footer></main></body></html>
